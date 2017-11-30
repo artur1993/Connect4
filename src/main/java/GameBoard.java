@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Setter
 @Getter
-public class GameBoard {
+public class GameBoard implements Cloneable{
     private Integer emptyField = 0;
     private Integer userField = 1;
     private Integer computerField = 2;
@@ -67,7 +67,6 @@ public class GameBoard {
     boolean columnFull(Integer columnToCheck, Integer[][] actualBoard){
         int last = numberOfRow - 1;
         if(actualBoard[last][columnToCheck] != 0){
-            System.out.println("kolumna pełna powtórz ruch");
             return true;
         }
         return false;
@@ -75,10 +74,8 @@ public class GameBoard {
 
     Status checkIfPlayerWin(Integer player, Integer[][] actualBoard){
         if(checkHorizontal(player, actualBoard) || checkVertical(player, actualBoard) || checkDiagonal00To67(player, actualBoard) || checkDiagonal60To07(player, actualBoard)){
-            System.out.println("wygrana");
             return status.WIN;
         } else if(gridFull(actualBoard)){
-            System.out.println("remis");
             return status.DRAW;
         }
         return status.CONTINUE_GAME;

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -40,7 +41,10 @@ public class Game {
     }
 
     public void computerMove(){
-        gameResult(randomValue(0, 6), computer);
+        MinMax minMax = new MinMax();
+//        gameResult(randomValue(0, 6), computer);
+        ArrayList<ColumnValue> path = new ArrayList<ColumnValue>();
+        gameResult(minMax.treeGenerate(gameBoard.getBoard(),computer, computer, path, 0, MinMaxEnum.MAX).getColumn(), computer);
     }
 
     public Integer randomValue(Integer min, Integer max){
