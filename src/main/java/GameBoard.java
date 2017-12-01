@@ -18,6 +18,35 @@ public class GameBoard implements Cloneable{
     private Integer numberOfRow = 6;
     private Integer numberOfColumn = 7;
     Status status;
+    Integer[][] starts00To67 = new Integer[6][2];
+    Integer[][] starts60To07 = new Integer[6][2];
+    GameBoard(){
+        starts00To67[0][0] = 2;
+        starts00To67[0][1] = 0;
+        starts00To67[1][0] = 1;
+        starts00To67[1][1] = 0;
+        starts00To67[2][0] = 0;
+        starts00To67[2][1] = 0;
+        starts00To67[3][0] = 0;
+        starts00To67[3][1] = 1;
+        starts00To67[4][0] = 0;
+        starts00To67[4][1] = 2;
+        starts00To67[5][0] = 0;
+        starts00To67[5][1] = 3;
+
+        starts60To07[0][0] = 3;
+        starts60To07[0][1] = 0;
+        starts60To07[1][0] = 4;
+        starts60To07[1][1] = 0;
+        starts60To07[2][0] = 5;
+        starts60To07[2][1] = 0;
+        starts60To07[3][0] = 5;
+        starts60To07[3][1] = 1;
+        starts60To07[4][0] = 5;
+        starts60To07[4][1] = 2;
+        starts60To07[5][0] = 5;
+        starts60To07[5][1] = 3;
+    }
 
     Integer[][] board = new Integer[numberOfRow][numberOfColumn];
 
@@ -73,7 +102,8 @@ public class GameBoard implements Cloneable{
     }
 
     Status checkIfPlayerWin(Integer player, Integer[][] actualBoard){
-        if(checkHorizontal(player, actualBoard) || checkVertical(player, actualBoard) || checkDiagonal00To67(player, actualBoard) || checkDiagonal60To07(player, actualBoard)){
+        if(checkHorizontal(player, actualBoard).isWin() || checkVertical(player, actualBoard).isWin() ||
+                checkDiagonal00To67(player, actualBoard).isWin() || checkDiagonal60To07(player, actualBoard).isWin()){
             return status.WIN;
         } else if(gridFull(actualBoard)){
             return status.DRAW;
@@ -91,80 +121,68 @@ public class GameBoard implements Cloneable{
         }
     }
 
-    boolean checkHorizontal(Integer player, Integer[][] actualBoard){
+    WinOrNotYet checkHorizontal(Integer player, Integer[][] actualBoard){
+        Integer maxSum = 0;
         for (int i = 0; i < actualBoard.length; i++) {
-            if(checkRow(new ArrayList<Integer>(Arrays.asList(actualBoard[i])), player) >= 4){
-                return true;
+            Integer sum = checkRow(new ArrayList<Integer>(Arrays.asList(actualBoard[i])), player);
+            if(sum >= 4){
+                return new WinOrNotYet(true, sum);
+            } else if(maxSum < sum){
+                maxSum = sum;
             }
         }
-        return false;
+        return new WinOrNotYet(false, maxSum);
     }
 
-
-    boolean checkVertical(Integer player, Integer[][] actualBoard){
+    WinOrNotYet checkVertical(Integer player, Integer[][] actualBoard){
+        Integer maxSum = 0;
         for (int i = 0; i < actualBoard[0].length; i++) {
-            int sum = 0;
             List<Integer> column = new ArrayList<Integer>();
             for (int j = 0; j < actualBoard.length; j++) {
                 column.add(actualBoard[j][i]);
             }
-            if(checkRow(column, player) >= 4){
-                return true;
+            Integer sum = checkRow(column, player);
+            if(sum >= 4){
+                return new WinOrNotYet(true, sum);
+            } else if(maxSum < sum){
+                maxSum = sum;
             }
         }
-        return false;
+        return new WinOrNotYet(false, maxSum);
     }
 
 
 
-    boolean checkDiagonal00To67(Integer player, Integer[][] actualBoard) {
-        Integer[][] starts = new Integer[6][2];
-        starts[0][0] = 2;
-        starts[0][1] = 0;
-        starts[1][0] = 1;
-        starts[1][1] = 0;
-        starts[2][0] = 0;
-        starts[2][1] = 0;
-        starts[3][0] = 0;
-        starts[3][1] = 1;
-        starts[4][0] = 0;
-        starts[4][1] = 2;
-        starts[5][0] = 0;
-        starts[5][1] = 3;
+    WinOrNotYet checkDiagonal00To67(Integer player, Integer[][] actualBoard) {
+        Integer maxSum = 0;
 
-        for (int i = 0; i < starts.length; i++) {
-            Integer[] start = starts[i];
-            if(checkRow(returnDiagonalArray(start, actualBoard, 1), player) >= 4){
-                return true;
+        for (int i = 0; i < starts00To67.length; i++) {
+            Integer[] start = starts00To67[i];
+            Integer sum = checkRow(returnDiagonalArray(start, actualBoard, 1), player);
+            if(sum >= 4){
+                return new WinOrNotYet(true, sum);
+            } else if(maxSum < sum){
+                maxSum = sum;
             }
         }
 
-        return false;
+        return new WinOrNotYet(false, maxSum);
     }
 
-    boolean checkDiagonal60To07(Integer player, Integer[][] actualBoard) {
-        Integer[][] starts = new Integer[6][2];
-        starts[0][0] = 3;
-        starts[0][1] = 0;
-        starts[1][0] = 4;
-        starts[1][1] = 0;
-        starts[2][0] = 5;
-        starts[2][1] = 0;
-        starts[3][0] = 5;
-        starts[3][1] = 1;
-        starts[4][0] = 5;
-        starts[4][1] = 2;
-        starts[5][0] = 5;
-        starts[5][1] = 3;
+    WinOrNotYet checkDiagonal60To07(Integer player, Integer[][] actualBoard) {
+        Integer maxSum = 0;
 
-        for (int i = 0; i < starts.length; i++) {
-            Integer[] start = starts[i];
-            if(checkRow(returnDiagonalArray(start, actualBoard, -1), player) >= 4){
-                return true;
+        for (int i = 0; i < starts60To07.length; i++) {
+            Integer[] start = starts60To07[i];
+            Integer sum = checkRow(returnDiagonalArray(start, actualBoard, -1), player);
+            if(sum >= 4){
+                return new WinOrNotYet(true, sum);
+            } else if(maxSum < sum){
+                maxSum = sum;
             }
         }
 
-        return false;
+        return new WinOrNotYet(false, maxSum);
     }
 
     Integer checkRow(List<Integer> row, Integer player) {
