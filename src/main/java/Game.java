@@ -29,12 +29,17 @@ public class Game {
     }
 
     public void playerMove(){
-        System.out.println("Wybierz kolumnę z zakresu 0-6");
+        System.out.println("Wybierz kolumnę z zakresu 0-6 lub 9 jeżeli ruch ma być wykonany przez algorytm");
         Integer chosenColumn = input.nextInt();
         if(0 <= chosenColumn && chosenColumn <= 6){
             gameResult(chosenColumn, player);
+        } else if(chosenColumn == 9){
+            MinMax minMax = new MinMax();
+            ArrayList<ColumnValue> path = new ArrayList<ColumnValue>();
+            ColumnValue columnValue = minMax.treeGenerate(gameBoard.getBoard(), player, player, path, 0, MinMaxEnum.MAX);
+            gameResult(columnValue.getColumn(), player);
         } else {
-            System.out.println(chosenColumn.toString() + " nie jest poprawnym wyborem, kolumny są numerowane 0-6");
+            System.out.println(chosenColumn.toString() + " nie jest poprawnym wyborem, kolumny są numerowane 0-6, 9 jeżeli ruch ma być wykonany przez algorytm");
             playerMove();
         }
 
@@ -42,9 +47,9 @@ public class Game {
 
     public void computerMove(){
         MinMax minMax = new MinMax();
-//        gameResult(randomValue(0, 6), computer);
         ArrayList<ColumnValue> path = new ArrayList<ColumnValue>();
-        gameResult(minMax.treeGenerate(gameBoard.getBoard(),computer, computer, path, 0, MinMaxEnum.MAX).getColumn(), computer);
+        ColumnValue columnValue = minMax.treeGenerate(gameBoard.getBoard(), computer, computer, path, 0, MinMaxEnum.MAX);
+        gameResult(columnValue.getColumn(), computer);
     }
 
     public Integer randomValue(Integer min, Integer max){
@@ -53,6 +58,7 @@ public class Game {
     }
 
     private void gameResult(Integer chosenColumn, Integer whoseMove) {
+        System.out.println();
         switch (gameBoard.move(chosenColumn, whoseMove)){
             case WIN:
                 gameBoard.printGrid();
@@ -71,6 +77,7 @@ public class Game {
                 chosenPlayer(changePlayer(whoseMove));
                 break;
         }
+        System.out.println();
     }
 
     private void winMessage(Integer whoseMove) {
